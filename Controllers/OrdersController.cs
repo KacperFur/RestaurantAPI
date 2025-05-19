@@ -5,7 +5,7 @@ namespace RestaurantAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OrderController : ControllerBase
+    public class OrdersController : ControllerBase
     {
         private List<Order> orders = new List<Order>
         {
@@ -24,11 +24,22 @@ namespace RestaurantAPI.Controllers
                 new OrderItem(5, 3, 5, 1, 12.99m)
             })
         };
+
+        /// <summary>
+        /// Get all orders
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult<List<Order>> GetAll()
         {
             return Ok(orders);
         }
+
+        /// <summary>
+        /// Get an order by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public ActionResult<Order> GetById(int id)
         {
@@ -39,6 +50,12 @@ namespace RestaurantAPI.Controllers
             }
             return Ok(order);
         }
+
+        /// <summary>
+        /// Create a new order
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult<Order> Create(Order order)
         {
@@ -49,6 +66,13 @@ namespace RestaurantAPI.Controllers
             orders.Add(order);
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }
+
+        /// <summary>
+        /// Update an existing order
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public ActionResult<Order> Update(int id, Order order)
         {
@@ -56,11 +80,13 @@ namespace RestaurantAPI.Controllers
             {
                 return BadRequest();
             }
+
             var existingOrder = orders.FirstOrDefault(e => e.Id == id);
             if (existingOrder == null)
             {
                 return NotFound();
             }
+
             existingOrder.UserId = order.UserId;
             existingOrder.DishId = order.DishId;
             existingOrder.OrderDate = order.OrderDate;
@@ -69,6 +95,12 @@ namespace RestaurantAPI.Controllers
             existingOrder.OrderItems = order.OrderItems;
             return Ok(existingOrder);
         }
+
+        /// <summary>
+        /// Delete an order
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
@@ -77,6 +109,7 @@ namespace RestaurantAPI.Controllers
             {
                 return NotFound();
             }
+
             orders.Remove(order);
             return NoContent();
         }

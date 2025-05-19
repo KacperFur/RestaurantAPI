@@ -5,7 +5,7 @@ namespace RestaurantAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private static List<Role> roles = new List<Role>
         {
@@ -21,15 +21,24 @@ namespace RestaurantAPI.Controllers
             new User(1,"John","Paul","JohnPaul","psswd","johnpaul37@mail.com",roles.FirstOrDefault(e=>e.Id==1)),
             new User(1,"Eric","Cartman","Erixx","pswd1","eric@mail.com",roles.FirstOrDefault(e=>e.Id==2)),
             new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==3)),
-             new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==4))
+            new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==4))
         };
 
-
+        /// <summary>
+        /// Get all users
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult<List<User>> GetAll()
         {
             return Ok(users);
         }
+
+        /// <summary>
+        /// Get a user by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public ActionResult<User> GetById(int id)
         {
@@ -40,6 +49,12 @@ namespace RestaurantAPI.Controllers
             }
             return Ok(user);
         }
+
+        /// <summary>
+        /// Create a new user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult<User> Create(User user)
         {
@@ -47,9 +62,17 @@ namespace RestaurantAPI.Controllers
             {
                 return BadRequest();
             }
+
             users.Add(user);
             return CreatedAtAction(nameof(GetById), user.Id, user);
         }
+
+        /// <summary>
+        /// Update an existing user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public ActionResult<User> Update(int id, User user)
         {
@@ -62,6 +85,7 @@ namespace RestaurantAPI.Controllers
             {
                 return NotFound();
             }
+
             existingUser.FirstName = user.FirstName;
             existingUser.LastName = user.LastName;
             existingUser.Username = user.Username;
@@ -70,6 +94,12 @@ namespace RestaurantAPI.Controllers
             existingUser.Role = user.Role;
             return NoContent();
         }
+
+        /// <summary>
+        /// Delete a user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
@@ -78,6 +108,7 @@ namespace RestaurantAPI.Controllers
             {
                 return NotFound();
             }
+
             users.Remove(user);
             return NoContent();
         }

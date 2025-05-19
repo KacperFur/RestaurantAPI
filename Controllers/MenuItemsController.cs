@@ -5,7 +5,7 @@ namespace RestaurantAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class MenuItemController : ControllerBase
+    public class MenuItemsController : ControllerBase
     {
         private static List<MenuItem> menuItems = new List<MenuItem>
         {
@@ -13,11 +13,22 @@ namespace RestaurantAPI.Controllers
             new MenuItem(2, "Burger", "Juicy beef burger", 5.99m, "American", MealType.MainCourse),
             new MenuItem(3, "Pad Thai", "Fresh intense noodles", 7.99m, "Oriental", MealType.MainCourse)
         };
+
+        /// <summary>
+        /// Get all menu items
+        /// </summary>
+        /// <returns>List of menu items</returns>
         [HttpGet]
         public ActionResult<List<MenuItem>> GetAll()
         {
             return Ok(menuItems);
         }
+
+        /// <summary>
+        /// Get a menu item by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public ActionResult<MenuItem> GetById(int id)
         {
@@ -28,6 +39,12 @@ namespace RestaurantAPI.Controllers
             }
             return Ok(menuItem);
         }
+
+        /// <summary>
+        /// Create a new menu item
+        /// </summary>
+        /// <param name="menuItem"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult<MenuItem> Create(MenuItem menuItem)
         {
@@ -35,9 +52,17 @@ namespace RestaurantAPI.Controllers
             {
                 return BadRequest();
             }
+
             menuItems.Add(menuItem);
             return CreatedAtAction(nameof(GetById), new { id = menuItem.Id }, menuItem);
         }
+
+        /// <summary>
+        /// Update an existing menu item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="menuItem"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public ActionResult<MenuItem> Update(int id, MenuItem menuItem)
         {
@@ -50,6 +75,7 @@ namespace RestaurantAPI.Controllers
             {
                 return NotFound();
             }
+
             existingMenuItem.Name = menuItem.Name;
             existingMenuItem.Description = menuItem.Description;
             existingMenuItem.Price = menuItem.Price;
@@ -57,6 +83,12 @@ namespace RestaurantAPI.Controllers
             existingMenuItem.MealType = menuItem.MealType;
             return Ok(existingMenuItem);
         }
+
+        /// <summary>
+        /// Delete a menu item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
@@ -65,6 +97,7 @@ namespace RestaurantAPI.Controllers
             {
                 return NotFound();
             }
+
             menuItems.Remove(menuItem);
             return NoContent();
         }

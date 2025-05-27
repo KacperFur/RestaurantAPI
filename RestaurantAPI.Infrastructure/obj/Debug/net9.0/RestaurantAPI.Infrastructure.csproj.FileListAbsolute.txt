@@ -1,0 +1,17 @@
+D:\LeverX\RestaurantAPI.Infrastructure\bin\Debug\net9.0\RestaurantAPI.Infrastructure.deps.json
+D:\LeverX\RestaurantAPI.Infrastructure\bin\Debug\net9.0\RestaurantAPI.Infrastructure.dll
+D:\LeverX\RestaurantAPI.Infrastructure\bin\Debug\net9.0\RestaurantAPI.Infrastructure.pdb
+D:\LeverX\RestaurantAPI.Infrastructure\bin\Debug\net9.0\RestaurantAPI.Application.dll
+D:\LeverX\RestaurantAPI.Infrastructure\bin\Debug\net9.0\RestaurantAPI.Domain.dll
+D:\LeverX\RestaurantAPI.Infrastructure\bin\Debug\net9.0\RestaurantAPI.Domain.pdb
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\RestaurantAPI.Infrastructure.csproj.AssemblyReference.cache
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\RestaurantAPI.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\RestaurantAPI.Infrastructure.AssemblyInfoInputs.cache
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\RestaurantAPI.Infrastructure.AssemblyInfo.cs
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\RestaurantAPI.Infrastructure.csproj.CoreCompileInputs.cache
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\Restaura.C809AD86.Up2Date
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\RestaurantAPI.Infrastructure.dll
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\refint\RestaurantAPI.Infrastructure.dll
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\RestaurantAPI.Infrastructure.pdb
+D:\LeverX\RestaurantAPI.Infrastructure\obj\Debug\net9.0\ref\RestaurantAPI.Infrastructure.dll
+D:\LeverX\RestaurantAPI.Infrastructure\bin\Debug\net9.0\RestaurantAPI.Application.pdb

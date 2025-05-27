@@ -1,0 +1,11 @@
+D:\LeverX\RestaurantAPI.Domain\bin\Debug\net9.0\RestaurantAPI.Domain.deps.json
+D:\LeverX\RestaurantAPI.Domain\bin\Debug\net9.0\RestaurantAPI.Domain.dll
+D:\LeverX\RestaurantAPI.Domain\bin\Debug\net9.0\RestaurantAPI.Domain.pdb
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.AssemblyInfoInputs.cache
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.AssemblyInfo.cs
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.csproj.CoreCompileInputs.cache
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.dll
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\refint\RestaurantAPI.Domain.dll
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.pdb
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\ref\RestaurantAPI.Domain.dll

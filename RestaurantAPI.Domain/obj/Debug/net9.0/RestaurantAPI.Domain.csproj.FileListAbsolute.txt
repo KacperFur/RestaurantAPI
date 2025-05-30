@@ -9,3 +9,4 @@ D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.dll
 D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\refint\RestaurantAPI.Domain.dll
 D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.pdb
 D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\ref\RestaurantAPI.Domain.dll
+D:\LeverX\RestaurantAPI.Domain\obj\Debug\net9.0\RestaurantAPI.Domain.sourcelink.json

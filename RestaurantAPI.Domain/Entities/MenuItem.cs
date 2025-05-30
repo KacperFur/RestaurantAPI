@@ -1,4 +1,6 @@
-﻿namespace RestaurantAPI.Entities
+﻿using RestaurantAPI.Domain.Entities;
+
+namespace RestaurantAPI.Entities
 {
     public class MenuItem(int id, string name, string description, decimal price, string category, MealType mealType)
     {
@@ -8,13 +10,5 @@
         public decimal Price { get; set; } = price;
         public string Category { get; set; } = category;
         public MealType MealType { get; set; } = mealType;
-    }
-
-    public enum MealType
-    {
-        Appetizer,
-        MainCourse,
-        Dessert,
-        Beverage
     }
 }

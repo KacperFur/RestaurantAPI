@@ -1,4 +1,6 @@
-﻿namespace RestaurantAPI.Entities
+﻿using RestaurantAPI.Domain.Entities;
+
+namespace RestaurantAPI.Entities
 {
     public class Order(int id, int userId, int dishId, DateTime orderDate, OrderStatus status, decimal totalAmount, List<OrderItem> orderItems)
     {
@@ -9,12 +11,5 @@
         public OrderStatus Status { get; set; } = status;
         public decimal TotalAmount { get; set; } = totalAmount;
         public List<OrderItem> OrderItems { get; set; } = orderItems;
-    }
-
-    public enum OrderStatus
-    {
-        Pending,
-        Completed,
-        Cancelled
     }
 }

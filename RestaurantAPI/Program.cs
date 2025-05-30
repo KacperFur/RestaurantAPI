@@ -1,3 +1,4 @@
+using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Services;
 using System.Reflection;
 

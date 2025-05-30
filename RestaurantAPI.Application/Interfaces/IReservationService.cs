@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RestaurantAPI.Application.Services
+namespace RestaurantAPI.Application.Interfaces
 {
     public interface IReservationService
     {

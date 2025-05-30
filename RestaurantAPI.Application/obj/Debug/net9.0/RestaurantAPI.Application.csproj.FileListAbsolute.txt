@@ -13,3 +13,4 @@ D:\LeverX\RestaurantAPI.Application\bin\Debug\net9.0\RestaurantAPI.Domain.dll
 D:\LeverX\RestaurantAPI.Application\bin\Debug\net9.0\RestaurantAPI.Domain.pdb
 D:\LeverX\RestaurantAPI.Application\obj\Debug\net9.0\RestaurantAPI.Application.csproj.AssemblyReference.cache
 D:\LeverX\RestaurantAPI.Application\obj\Debug\net9.0\Restaura.E0EDCAC1.Up2Date
+D:\LeverX\RestaurantAPI.Application\obj\Debug\net9.0\RestaurantAPI.Application.sourcelink.json

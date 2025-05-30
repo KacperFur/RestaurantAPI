@@ -1,9 +1,5 @@
-﻿using RestaurantAPI.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Application.Services
 {
@@ -16,7 +12,6 @@ namespace RestaurantAPI.Application.Services
            new Payment(3, 3, 12.99m, PaymentMethod.Blik, PaymentStatus.Paid, DateTime.Now)
        };
 
-
         public void Create(Payment payment)
         {
             payments.Add(payment);
@@ -26,7 +21,9 @@ namespace RestaurantAPI.Application.Services
         {
             var payment = payments.FirstOrDefault(e => e.Id == id);
             if (payment == null)
+            {
                 return false;
+            }
 
             payments.Remove(payment);
             return true;
@@ -39,8 +36,7 @@ namespace RestaurantAPI.Application.Services
 
         public Payment GetById(int id)
         {
-            var payment = payments.FirstOrDefault(e => e.Id == id);
-            return payment;
+            return payments.FirstOrDefault(e => e.Id == id);
         }
 
         public bool Update(int id, Payment payment)

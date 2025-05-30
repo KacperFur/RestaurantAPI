@@ -1,9 +1,5 @@
-﻿using RestaurantAPI.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Application.Services
 {
@@ -25,7 +21,9 @@ namespace RestaurantAPI.Application.Services
         {
             var reservation = reservations.FirstOrDefault(e => e.Id == id);
             if (reservation == null)
+            {
                 return false;
+            }
 
             reservations.Remove(reservation);
             return true;
@@ -37,9 +35,8 @@ namespace RestaurantAPI.Application.Services
         }
 
         public Reservation GetById(int id)
-        {
-            var reservation = reservations.FirstOrDefault(e => e.Id == id);
-            return reservation;
+        { 
+            return reservations.FirstOrDefault(e => e.Id == id);
         }
 
         public bool Update(int id, Reservation reservation)

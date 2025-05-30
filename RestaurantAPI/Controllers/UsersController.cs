@@ -19,9 +19,10 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<List<User>> GetAll()
+        public async Task<ActionResult<List<User>>> GetAll()
         {
-            return _userService.GetAll();
+            var users = await _userService.GetAll();
+            return Ok(users);
         }
 
         /// <summary>
@@ -30,9 +31,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<User> GetById(int id)
+        public async Task<ActionResult<User>> GetById(int id)
         {
-            var user = _userService.GetById(id);
+            var user =  await _userService.GetById(id);
             if (user == null)
             {
                 return NotFound();
@@ -63,13 +64,13 @@ namespace RestaurantAPI.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult<User> Update(int id, User user)
+        public async Task<ActionResult<User>> Update(int id, User user)
         {
             if (user == null || user.Id != id)
             {
                 return BadRequest();
             }
-            var updated = _userService.Update(id, user);
+            var updated = await _userService.Update(id, user);
             if (!updated)
                 return NotFound();
             return NoContent();
@@ -81,9 +82,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var deleted = _userService.Delete(id);
+            var deleted = await _userService.Delete(id);
             if (!deleted)
             {
                 return NotFound();

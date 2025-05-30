@@ -8,9 +8,9 @@ namespace RestaurantAPI.Application.Services
     {
         private static List<MenuItem> menuItems = new List<MenuItem>
         {
-            new MenuItem(1, "Pizza", "Delicious cheese pizza", 9.99m, "Italian", MealType.MainCourse),
-            new MenuItem(2, "Burger", "Juicy beef burger", 5.99m, "American", MealType.MainCourse),
-            new MenuItem(3, "Pad Thai", "Fresh intense noodles", 7.99m, "Oriental", MealType.MainCourse)
+            new MenuItem(1, "Pizza", "Delicious cheese pizza", 9.99m, 1, MealType.MainCourse),
+            new MenuItem(2, "Burger", "Juicy beef burger", 5.99m, 1, MealType.MainCourse),
+            new MenuItem(3, "Pad Thai", "Fresh intense noodles", 7.99m, 1, MealType.MainCourse)
         };
 
         public void Create(MenuItem menuItem)
@@ -50,7 +50,7 @@ namespace RestaurantAPI.Application.Services
             existingMenuItem.Name = menuItem.Name;
             existingMenuItem.Description = menuItem.Description;
             existingMenuItem.Price = menuItem.Price;
-            existingMenuItem.Category = menuItem.Category;
+            //existingMenuItem.Category = menuItem.Category;
             existingMenuItem.MealType = menuItem.MealType;
             return true;
         }

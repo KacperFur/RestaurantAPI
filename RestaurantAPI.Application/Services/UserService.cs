@@ -1,11 +1,18 @@
 ﻿using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
+using System.Threading.Tasks;
 
 
 namespace RestaurantAPI.Application.Services
 {
     public class UserService : IUserService
     {
+        private readonly IUserRepository _repository;
+        public UserService(IUserRepository repository)
+        {
+            _repository = repository;
+        }
         private static List<Role> roles = new List<Role>
         {
             new Role(0,"Customer","Allows to make an order"),
@@ -17,18 +24,18 @@ namespace RestaurantAPI.Application.Services
 
         private static List<User> users = new List<User>
         {
-            new User(1,"John","Paul","JohnPaul","psswd","johnpaul37@mail.com",roles.FirstOrDefault(e=>e.Id==1)),
-            new User(1,"Eric","Cartman","Erixx","pswd1","eric@mail.com",roles.FirstOrDefault(e=>e.Id==2)),
-            new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==3)),
-            new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==4))
+            //new User(1,"John","Paul","JohnPaul","psswd","johnpaul37@mail.com",roles.FirstOrDefault(e=>e.Id==1)),
+            //new User(1,"Eric","Cartman","Erixx","pswd1","eric@mail.com",roles.FirstOrDefault(e=>e.Id==2)),
+            //new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==3)),
+            //new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==4))
         };
 
-        public void Create(User user)
+        public async Task Create(User user)
         {
             users.Add(user);
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             var user = users.FirstOrDefault(e => e.Id == id);
             if (user == null)
@@ -40,17 +47,18 @@ namespace RestaurantAPI.Application.Services
             return true;
         }
 
-        public List<User> GetAll()
+        public async Task<List<User>> GetAll()
         {
-            return users;
+            var allUsers = await _repository.GetAllAsync();
+            return allUsers;
         }
 
-        public User GetById(int id)
+        public async Task<User> GetById(int id)
         {
-            return users.FirstOrDefault(e => e.Id == id);
+            return await _repository.GetByIdAsync(id);
         }
 
-        public bool Update(int id, User user)
+        public async Task<bool> Update(int id, User user)
         {
             var existingUser = users.FirstOrDefault(e => e.Id == id);
             if (existingUser == null)
@@ -63,7 +71,7 @@ namespace RestaurantAPI.Application.Services
             existingUser.Username = user.Username;
             existingUser.PasswordHash = user.PasswordHash;
             existingUser.Email = user.Email;
-            existingUser.Role = user.Role;
+            existingUser.RoleId = user.RoleId;
             return true;
         }
     }

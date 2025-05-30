@@ -1,4 +1,5 @@
 ﻿using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Domain.Entities;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Application.Services

@@ -1,23 +1,15 @@
-﻿namespace RestaurantAPI.Entities
+﻿using RestaurantAPI.Domain.Entities;
+
+namespace RestaurantAPI.Entities
 {
     public class Payment(int id, int orderId, decimal amount, PaymentMethod method, PaymentStatus status, DateTime paidAt)
     {
         public int Id { get; set; } = id;
-        public int OrderId { get; set; } = orderId;
+        public Guid PaymentId { get; set; } = Guid.NewGuid();
+        public int? OrderId { get; set; } = orderId;
         public decimal Amount { get; set; } = amount;
-        public PaymentMethod Method { get; set; } = method;
-        public PaymentStatus Status { get; set; } = status;
-        public DateTime PaidAt { get; set; } = paidAt;
-    }
-    public enum PaymentMethod
-    {
-        Cash,
-        Card,
-        Blik
-    }
-    public enum PaymentStatus
-    {
-        Paid,
-        Cancelled
+        public string Method { get; set; } = method.ToString();
+        public string Status { get; set; } = status.ToString();
+        public DateTime? PaidAt { get; set; }
     }
 }

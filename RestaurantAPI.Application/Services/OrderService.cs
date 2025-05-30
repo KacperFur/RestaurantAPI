@@ -59,11 +59,11 @@ namespace RestaurantAPI.Application.Services
                 return false;
             }
             existingOrder.UserId = order.UserId;
-            existingOrder.DishId = order.DishId;
+            //existingOrder.DishId = order.DishId;
             existingOrder.OrderDate = order.OrderDate;
             existingOrder.Status = order.Status;
             existingOrder.TotalAmount = order.TotalAmount;
-            existingOrder.OrderItems = order.OrderItems;
+            //existingOrder.OrderItems = order.OrderItems;
             return true;
         }
     }

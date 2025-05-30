@@ -3,12 +3,13 @@
     public class OrderItem(int id, int orderId, int menuItemId, int quantity, decimal price)
     {
         public int Id { get; set; } = id;
-        public int OrderId { get; set; } = orderId;
-        public int MenuItemId { get; set; } = menuItemId;
+        public Guid OrderItemId { get; set; } = Guid.NewGuid();
+        public int? OrderId { get; set; } = orderId;
+        public int? MenuItemId { get; set; } = menuItemId;
         public int Quantity { get; set; } = quantity;
         public decimal Price { get; set; } = price;
-        public decimal TotalPrice => Quantity * Price; 
-        public Order Order { get; set; }
-        public MenuItem Dish { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }

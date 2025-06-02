@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
@@ -18,9 +19,9 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns>List of menu items</returns>
         [HttpGet]
-        public ActionResult<List<MenuItem>> GetAll()
+        public async Task<ActionResult<List<MenuItemDto>>> GetAll()
         {
-            return Ok(_menuItemService.GetAll());
+            return Ok(await _menuItemService.GetAll());
         }
 
         /// <summary>
@@ -29,9 +30,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<MenuItem> GetById(int id)
+        public async Task<ActionResult<MenuItemDto>> GetById(int id)
         {
-            var menuItem = _menuItemService.GetById(id);
+            var menuItem = await _menuItemService.GetById(id);
             if (menuItem == null)
             {
                 return NotFound();
@@ -45,15 +46,15 @@ namespace RestaurantAPI.Controllers
         /// <param name="menuItem"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<MenuItem> Create(MenuItem menuItem)
+        public async Task<ActionResult<MenuItemDto>> Create(CreateMenuItemDto menuItem)
         {
             if (menuItem == null)
             {
                 return BadRequest();
             }
 
-            _menuItemService.Create(menuItem);
-            return CreatedAtAction(nameof(GetById), new { id = menuItem.Id }, menuItem);
+            var newId = await _menuItemService.Create(menuItem);
+            return CreatedAtAction(nameof(GetById), new { id = newId } , menuItem);
         }
 
         /// <summary>
@@ -63,20 +64,20 @@ namespace RestaurantAPI.Controllers
         /// <param name="menuItem"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult<MenuItem> Update(int id, MenuItem menuItem)
+        public async Task<ActionResult<MenuItemDto>> Update(int id, UpdateMenuItemDto menuItem)
         {
-            if (menuItem == null || menuItem.Id != id)
+            if (menuItem == null)
             {
                 return BadRequest();
             }
 
-            var updated = _menuItemService.Update(id, menuItem);
-            if (updated)
+            var updated = await _menuItemService.Update(id, menuItem);
+            if (!updated)
             {
                 return NotFound();
             }
 
-            return Ok(updated);
+            return NoContent();
         }
 
         /// <summary>
@@ -85,9 +86,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var deleted = _menuItemService.Delete(id);
+            var deleted = await _menuItemService.Delete(id);
             if (!deleted)
             {
                 return NotFound();

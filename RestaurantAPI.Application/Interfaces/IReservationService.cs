@@ -1,4 +1,5 @@
-﻿using RestaurantAPI.Entities;
+﻿using RestaurantAPI.Application.Models;
+using RestaurantAPI.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace RestaurantAPI.Application.Interfaces
 {
     public interface IReservationService
     {
-        List<Reservation> GetAll();
-        Reservation GetById(int id);
-        void Create(Reservation reservation);
-        bool Update(int id, Reservation reservation);
-        bool Delete(int id);
+        Task<List<ReservationDto>> GetAll();
+        Task<ReservationDto> GetById(int id);
+        Task<int> Create(CreateReservationDto reservation);
+        Task<bool> Update(int id, UpdateReservationDto reservation);
+        Task<bool> Delete(int id);
     }
 }

@@ -11,8 +11,8 @@ namespace RestaurantAPI.Domain.Interfaces
     {
         Task<List<T>> GetAllAsync();
         Task<T> GetByIdAsync(int id);
-        Task AddAsync(T user);
-        Task UpdateAsync(T user);
+        Task AddAsync(T item);
+        Task UpdateAsync(T item);
         Task DeleteAsync(int id);
     }
 }

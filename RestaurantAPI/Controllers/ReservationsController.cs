@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
@@ -18,9 +19,9 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<List<Reservation>> GetAll()
+        public async Task<ActionResult<List<ReservationDto>>> GetAll()
         {
-            return Ok(_reservationService.GetAll());
+            return Ok(await _reservationService.GetAll());
         }
 
         /// <summary>
@@ -29,9 +30,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<Reservation> GetById(int id)
+        public async Task<ActionResult<ReservationDto>> GetById(int id)
         {
-            var reservation = _reservationService.GetById(id);
+            var reservation = await _reservationService.GetById(id);
             if (reservation == null)
             {
                 return NotFound();
@@ -45,15 +46,15 @@ namespace RestaurantAPI.Controllers
         /// <param name="reservation"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<Reservation> Create(Reservation reservation)
+        public async Task<ActionResult<Reservation>> Create(CreateReservationDto dto)
         {
-            if (reservation == null)
+            if (dto == null)
             {
                 return BadRequest();
             }
 
-            _reservationService.Create(reservation);
-            return CreatedAtAction(nameof(GetById), new { id = reservation.Id }, reservation);
+            int newId = await _reservationService.Create(dto);
+            return CreatedAtAction(nameof(GetById), new { id = newId }, dto);
         }
 
         /// <summary>
@@ -63,19 +64,19 @@ namespace RestaurantAPI.Controllers
         /// <param name="reservation"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult<Reservation> Update(int id, Reservation reservation)
+        public async Task <ActionResult<ReservationDto>> Update(int id, UpdateReservationDto dto)
         {
-            if (reservation == null || reservation.Id != id)
+            if (dto == null)
             {
                 return BadRequest();
             }
 
-            var updatedReservation = _reservationService.Update(id,reservation);
+            var updatedReservation = await _reservationService.Update(id, dto);
             if (!updatedReservation)
             {
                 return NotFound();
             }
-            return Ok(updatedReservation);
+            return NoContent();
         }
 
         /// <summary>
@@ -84,9 +85,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var deleted = _reservationService.Delete(id);
+            var deleted = await _reservationService.Delete(id);
             if (!deleted)
             {
                 return NotFound();

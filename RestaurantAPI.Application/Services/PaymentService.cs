@@ -1,57 +1,63 @@
-﻿using RestaurantAPI.Application.Interfaces;
+﻿using AutoMapper;
+using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Domain.Entities;
+using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Application.Services
 {
     public class PaymentService : IPaymentService
     {
-        private static List<Payment> payments = new List<Payment>
-       {
-           new Payment(1, 1, 19.99m, PaymentMethod.Card, PaymentStatus.Paid, DateTime.Now),
-           new Payment(2, 2, 15.99m, PaymentMethod.Cash, PaymentStatus.Cancelled, DateTime.Now),
-           new Payment(3, 3, 12.99m, PaymentMethod.Blik, PaymentStatus.Paid, DateTime.Now)
-       };
-
-        public void Create(Payment payment)
+        private readonly IPaymentRepository _repository;
+        private readonly IMapper _mapper;
+        public PaymentService(IPaymentRepository repository, IMapper mapper)
         {
-            payments.Add(payment);
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        public bool Delete(int id)
+        public async Task<int> Create(CreatePaymentDto dto)
         {
-            var payment = payments.FirstOrDefault(e => e.Id == id);
+            var payment = _mapper.Map<Payment>(dto);
+            await _repository.AddAsync(payment);
+            return payment.Id;
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            var payment = await _repository.GetByIdAsync(id);
             if (payment == null)
             {
                 return false;
             }
 
-            payments.Remove(payment);
+            await _repository.DeleteAsync(id);
             return true;
         }
 
-        public List<Payment> GetAll()
+        public async Task<List<PaymentDto>> GetAll()
         {
-            return payments;
+            var result = await _repository.GetAllAsync();
+            return _mapper.Map<List<PaymentDto>>(result);
         }
 
-        public Payment GetById(int id)
+        public async Task<PaymentDto> GetById(int id)
         {
-            return payments.FirstOrDefault(e => e.Id == id);
+            var result = _repository.GetByIdAsync(id);
+            return _mapper.Map<PaymentDto>(result);
         }
 
-        public bool Update(int id, Payment payment)
+        public async Task<bool> Update(int id, UpdatePaymentDto dto)
         {
-            var existingPayment = payments.FirstOrDefault(e => e.Id == id);
+            var existingPayment = await _repository.GetByIdAsync(id);
             if (existingPayment == null)
             {
                 return false;
             }
-            existingPayment.OrderId = payment.OrderId;
-            existingPayment.Amount = payment.Amount;
-            existingPayment.Method = payment.Method;
-            existingPayment.Status = payment.Status;
-            existingPayment.PaidAt = payment.PaidAt;
+
+            _mapper.Map(dto, existingPayment);
+            await _repository.UpdateAsync(existingPayment);
             return true;
         }
     }

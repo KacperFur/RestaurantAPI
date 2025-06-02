@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
@@ -18,9 +19,9 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<List<Payment>> GetAll()
+        public async Task<ActionResult<List<PaymentDto>>> GetAll()
         {
-            return Ok(_paymentService.GetAll());
+            return Ok(await _paymentService.GetAll());
         }
 
         /// <summary>
@@ -29,9 +30,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<Payment> GetById(int id)
+        public async Task<ActionResult<PaymentDto>> GetById(int id)
         {
-            var payment = _paymentService.GetById(id);
+            var payment = await _paymentService.GetById(id);
             if (payment == null)
             {
                 return NotFound();
@@ -46,15 +47,15 @@ namespace RestaurantAPI.Controllers
         /// <param name="payment"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<Payment> Create(Payment payment)
+        public async Task<ActionResult<PaymentDto>> Create(CreatePaymentDto dto)
         {
-            if (payment == null)
+            if (dto == null)
             {
                 return BadRequest();
             }
 
-            _paymentService.Create(payment);
-            return CreatedAtAction(nameof(GetById), new { id = payment.Id }, payment);
+            var newId = await _paymentService.Create(dto);
+            return CreatedAtAction(nameof(GetById), new { id = newId }, dto);
         }
 
         /// <summary>
@@ -64,20 +65,20 @@ namespace RestaurantAPI.Controllers
         /// <param name="payment"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult<Payment> Update(int id, Payment payment)
+        public async Task<ActionResult<PaymentDto>> Update(int id, UpdatePaymentDto dto)
         {
-            if (payment == null || payment.Id != id)
+            if (dto == null)
             {
                 return BadRequest();
             }
 
-            var updated = _paymentService.Update(id, payment);
-            if (updated)
+            var updated = await _paymentService.Update(id, dto);
+            if (!updated)
             {
                 return NotFound();
             }
 
-            return Ok(payment);
+            return NoContent();
         }
 
         /// <summary>
@@ -86,9 +87,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var deleted = _paymentService.Delete(id);
+            var deleted = await _paymentService.Delete(id);
             if (!deleted)
             {
                 return NotFound();

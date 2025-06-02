@@ -1,10 +1,10 @@
-using RestaurantAPI.Application.Interfaces;
-using RestaurantAPI.Application.Services;
 using Microsoft.Data.SqlClient;
 using System.Reflection;
 using System.Data;
-using RestaurantAPI.Domain.Interfaces;
-using RestaurantAPI.Infrastructure.Repositories;
+using RestaurantAPI.Infrastructure.Extensions;
+using RestaurantAPI.Application.Mappings;
+using RestaurantAPI.Entities;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -12,15 +12,12 @@ Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IDbConnection>(sp =>
     new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITableService, TableService>();
-builder.Services.AddScoped<IMenuItemService, MenuItemService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddApplicationServices();
+builder.Services.AddApplicationRepositories();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(c=>

@@ -2,12 +2,13 @@
 
 namespace RestaurantAPI.Entities
 {
-    public class Table(int id, int tableNumber, int seats, TableStatus status)
+    public class Table
     {
-        public int Id { get; set; } = id;
-        public Guid TableId { get; set; } = Guid.NewGuid();
-        public int TableNumber { get; set; } = tableNumber;
-        public int Seats { get; set; } = seats;
-        public string Status { get; set; } = status.ToString();
+        public int Id { get; set; }
+        public Guid TableId { get; set; }
+        public int TableNumber { get; set; }
+        public int Seats { get; set; } 
+        public string Status { get; set; }
+        public Table() { }
     }
 }

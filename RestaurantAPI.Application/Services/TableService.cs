@@ -1,55 +1,63 @@
-﻿using RestaurantAPI.Application.Interfaces;
+﻿using AutoMapper;
+using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Domain.Entities;
+using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Application.Services
 {
     public class TableService : ITableService
     {
-        private static List<Table> tables = new List<Table>
+        private readonly ITableRepository _repository;
+        private readonly IMapper _mapper;   
+        public TableService(ITableRepository repository, IMapper mapper)
         {
-            new Table(1, 4,2, TableStatus.Free),
-            new Table(2, 2,3, TableStatus.Occupied),
-            new Table(3, 6,4, TableStatus.Reserved)
-        };
-
-        public void Create(Table table)
-        {
-            tables.Add(table);
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        public bool Delete(int id)
+        public async Task<int> Create(CreateTableDto dto)
         {
-            var table = tables.FirstOrDefault(e => e.Id == id);
+            var table = _mapper.Map<Table>(dto);
+            await _repository.AddAsync(table);
+            return table.Id;
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            var table = await _repository.GetByIdAsync(id);
             if (table == null)
             {
                 return false;
             }
 
-            tables.Remove(table);
+            await _repository.DeleteAsync(id);
             return true;
         }
 
-        public List<Table> GetAll()
+        public async Task<List<TableDto>> GetAll()
         {
-            return tables;
+            var result = await _repository.GetAllAsync();
+            return _mapper.Map<List<TableDto>>(result);
         }
 
-        public Table GetById(int id)
+        public async Task<TableDto> GetById(int id)
         {
-            return tables.FirstOrDefault(e => e.Id == id);
+            var result = await _repository.GetByIdAsync(id);
+            return _mapper.Map<TableDto>(result);
         }
 
-        public bool Update(int id, Table table)
+        public async Task<bool> Update(int id, UpdateTableDto dto)
         {
-            var existingTable = tables.FirstOrDefault(e => e.Id == id);
+            var existingTable = await _repository.GetByIdAsync(id);
             if (existingTable == null)
             {
                 return false;
             }
-            existingTable.Seats = table.Seats;
-            existingTable.TableNumber = table.TableNumber;
-            existingTable.Status = table.Status;
+
+            _mapper.Map(dto, existingTable);
+            await _repository.UpdateAsync(existingTable);
             return true;
         }
     }

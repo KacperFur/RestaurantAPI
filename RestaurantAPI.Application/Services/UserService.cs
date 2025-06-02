@@ -1,4 +1,8 @@
-﻿using RestaurantAPI.Application.Interfaces;
+﻿using AutoMapper;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Identity;
+using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
 using System.Threading.Tasks;
@@ -9,69 +13,61 @@ namespace RestaurantAPI.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
-        public UserService(IUserRepository repository)
+        private readonly IMapper _mapper;
+        private readonly IPasswordHasher<User> _passwordHasher;
+        public UserService(IUserRepository repository, IMapper mapper, IPasswordHasher<User> hasher)
         {
             _repository = repository;
+            _mapper = mapper;
+            _passwordHasher = hasher;
         }
-        private static List<Role> roles = new List<Role>
-        {
-            new Role(0,"Customer","Allows to make an order"),
-            new Role(1,"Employee","Regular Employee"),
-            new Role(2,"Supervisor","Allows to make an order"),
-            new Role(3,"Manager","Allows to make an order"),
-            new Role(4,"Administrator","System administrator")
-        };
 
-        private static List<User> users = new List<User>
+        public async Task<int> Create(CreateUserDto dto)
         {
-            //new User(1,"John","Paul","JohnPaul","psswd","johnpaul37@mail.com",roles.FirstOrDefault(e=>e.Id==1)),
-            //new User(1,"Eric","Cartman","Erixx","pswd1","eric@mail.com",roles.FirstOrDefault(e=>e.Id==2)),
-            //new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==3)),
-            //new User(1,"","","","","",roles.FirstOrDefault(e=>e.Id==4))
-        };
+            var user = _mapper.Map<User>(dto);
+            var hashedPassword = _passwordHasher.HashPassword(user, dto.Password);
+            user.PasswordHash = hashedPassword;
+            await _repository.AddAsync(user);
 
-        public async Task Create(User user)
-        {
-            users.Add(user);
+            return user.Id;
         }
 
         public async Task<bool> Delete(int id)
         {
-            var user = users.FirstOrDefault(e => e.Id == id);
+            var user = _repository.GetByIdAsync(id);
             if (user == null)
             {
                 return false;
             }
 
-            users.Remove(user);
+            await _repository.DeleteAsync(id);
             return true;
         }
 
-        public async Task<List<User>> GetAll()
+        public async Task<List<UserDto>> GetAll()
         {
-            var allUsers = await _repository.GetAllAsync();
-            return allUsers;
+            var result = await _repository.GetAllAsync();
+            return _mapper.Map<List<UserDto>>(result);
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<UserDto> GetById(int id)
         {
-            return await _repository.GetByIdAsync(id);
+            var result = await _repository.GetByIdAsync(id);
+            return _mapper.Map<UserDto>(result);
         }
 
-        public async Task<bool> Update(int id, User user)
+        public async Task<bool> Update(int id, UpdateUserDto dto)
         {
-            var existingUser = users.FirstOrDefault(e => e.Id == id);
+            var existingUser = await _repository.GetByIdAsync(id);
             if (existingUser == null)
             {
                 return false;
             }
 
-            existingUser.FirstName = user.FirstName;
-            existingUser.LastName = user.LastName;
-            existingUser.Username = user.Username;
-            existingUser.PasswordHash = user.PasswordHash;
-            existingUser.Email = user.Email;
-            existingUser.RoleId = user.RoleId;
+            var hashedPassword = _passwordHasher.HashPassword(existingUser, dto.Password);
+            existingUser.PasswordHash = hashedPassword;
+            _mapper.Map(dto, existingUser);
+            await _repository.UpdateAsync(existingUser);
             return true;
         }
     }

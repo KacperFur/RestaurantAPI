@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
@@ -19,9 +20,9 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<List<Table>> GetAll()
+        public async Task<ActionResult<List<Table>>> GetAll()
         {
-            return Ok(_tableService.GetAll());
+            return Ok(await _tableService.GetAll());
         }
 
         /// <summary>
@@ -30,9 +31,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<Table> GetById(int id)
+        public async Task<ActionResult<Table>> GetById(int id)
         {
-            var table = _tableService.GetById(id);
+            var table = await _tableService.GetById(id);
             if (table == null)
             {
                 return NotFound();
@@ -47,15 +48,15 @@ namespace RestaurantAPI.Controllers
         /// <param name="table"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<Table> Create(Table table)
+        public async Task<ActionResult<Table>> Create(CreateTableDto table)
         {
             if (table == null)
             {
                 return BadRequest();
             }
             
-            _tableService.Create(table);
-            return CreatedAtAction(nameof(GetById), new { id = table.Id }, table);
+            int newId = await _tableService.Create(table);
+            return CreatedAtAction(nameof(GetById), new { id = newId}, table);
         }
 
         /// <summary>
@@ -65,13 +66,13 @@ namespace RestaurantAPI.Controllers
         /// <param name="table"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult<Table> Update(int id, Table table)
+        public async Task<ActionResult<TableDto>> Update(int id, UpdateTableDto table)
         {
-            if (table == null ||  table.Id != id)
+            if (table == null)
             {
                 return BadRequest();
             }
-            var updated = _tableService.Update(id, table);
+            var updated = await _tableService.Update(id, table);
             if (!updated)
                 return NotFound();
             return NoContent();
@@ -83,9 +84,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var deleted = _tableService.Delete(id);
+            var deleted = await _tableService.Delete(id);
             if (!deleted)
             {
                 return NotFound();

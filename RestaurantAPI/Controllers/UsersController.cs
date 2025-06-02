@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
@@ -19,7 +20,7 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetAll()
+        public async Task<ActionResult<List<UserDto>>> GetAll()
         {
             var users = await _userService.GetAll();
             return Ok(users);
@@ -31,7 +32,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetById(int id)
+        public async Task<ActionResult<UserDto>> GetById(int id)
         {
             var user =  await _userService.GetById(id);
             if (user == null)
@@ -47,14 +48,14 @@ namespace RestaurantAPI.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<User> Create(User user)
+        public ActionResult<UserDto> Create(CreateUserDto dto)
         {
-            if (user == null)
+            if (dto == null)
             {
                 return BadRequest();
             }
-            _userService.Create(user);
-            return CreatedAtAction(nameof(GetById), user.Id, user);
+            var newId = _userService.Create(dto);
+            return CreatedAtAction(nameof(GetById),new { Id = newId }, dto);
         }
 
         /// <summary>
@@ -64,13 +65,13 @@ namespace RestaurantAPI.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult<User>> Update(int id, User user)
+        public async Task<ActionResult<UserDto>> Update(int id, UpdateUserDto dto)
         {
-            if (user == null || user.Id != id)
+            if (dto == null)
             {
                 return BadRequest();
             }
-            var updated = await _userService.Update(id, user);
+            var updated = await _userService.Update(id, dto);
             if (!updated)
                 return NotFound();
             return NoContent();

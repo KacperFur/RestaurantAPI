@@ -2,17 +2,18 @@
 
 namespace RestaurantAPI.Entities
 {
-    public class MenuItem(int id, string name, string description, decimal price, int categoryId, MealType mealType)
+    public class MenuItem
     {
-        public int Id { get; set; } = id;
-        public Guid MenuItemId { get; set; } = Guid.NewGuid();
-        public string Name { get; set; } = string.Empty;
-        public string? Description { get; set; } = description;
-        public decimal Price { get; set; } = price;
-        public int? CategoryId { get; set; } = categoryId;
-        public string MealType { get; set; } = mealType.ToString();
-        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public int Id { get; set; }
+        public Guid MenuItemId { get; set; } 
+        public string Name { get; set; } 
+        public string? Description { get; set; } 
+        public decimal Price { get; set; } 
+        public int? CategoryId { get; set; } 
+        public string MealType { get; set; } 
+        public DateTime? CreatedAt { get; set; } 
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public MenuItem(){}
     }
 }

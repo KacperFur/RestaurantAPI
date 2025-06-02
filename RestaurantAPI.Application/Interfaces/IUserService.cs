@@ -1,4 +1,5 @@
-﻿using RestaurantAPI.Entities;
+﻿using RestaurantAPI.Application.Models;
+using RestaurantAPI.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace RestaurantAPI.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<List<User>> GetAll();
-        Task<User> GetById(int id);
-        Task Create(User user);
-        Task<bool> Update(int id, User user);
+        Task<List<UserDto>> GetAll();
+        Task<UserDto> GetById(int id);
+        Task<int>Create(CreateUserDto dto);
+        Task<bool> Update(int id, UpdateUserDto dto);
         Task<bool> Delete(int id);
     }
 }

@@ -1,18 +1,13 @@
-﻿using RestaurantAPI.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RestaurantAPI.Application.Models;
 
 namespace RestaurantAPI.Application.Interfaces
 {
     public interface ITableService
     {
-        List<Table> GetAll();
-        Table GetById(int id);
-        void Create(Table table);
-        bool Update(int id, Table table);
-        bool Delete(int id);
+        Task<List<TableDto>> GetAll();
+        Task<TableDto> GetById(int id);
+        Task<int> Create(CreateTableDto table);
+        Task<bool> Update(int id, UpdateTableDto table);
+        Task<bool> Delete(int id);
     }
 }

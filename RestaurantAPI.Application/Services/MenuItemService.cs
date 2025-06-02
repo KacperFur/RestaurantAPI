@@ -1,57 +1,63 @@
-﻿using RestaurantAPI.Application.Interfaces;
+﻿using AutoMapper;
+using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Domain.Entities;
+using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Application.Services
 {
     public class MenuItemService : IMenuItemService
     {
-        private static List<MenuItem> menuItems = new List<MenuItem>
+        private readonly IMenuItemRepository _repository;
+        private readonly IMapper _mapper;
+        public MenuItemService(IMenuItemRepository repository, IMapper mapper)
         {
-            new MenuItem(1, "Pizza", "Delicious cheese pizza", 9.99m, 1, MealType.MainCourse),
-            new MenuItem(2, "Burger", "Juicy beef burger", 5.99m, 1, MealType.MainCourse),
-            new MenuItem(3, "Pad Thai", "Fresh intense noodles", 7.99m, 1, MealType.MainCourse)
-        };
-
-        public void Create(MenuItem menuItem)
-        {
-            menuItems.Add(menuItem);
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        public bool Delete(int id)
+        public async Task<int> Create(CreateMenuItemDto dto)
         {
-            var menuItem = menuItems.FirstOrDefault(e => e.Id == id);
+            var menuItem = _mapper.Map<MenuItem>(dto);
+            await _repository.AddAsync(menuItem);
+            return menuItem.Id;
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            var menuItem = await _repository.GetByIdAsync(id);
             if (menuItem == null)
             {
                 return false;
             }
 
-            menuItems.Remove(menuItem);
+            await _repository.DeleteAsync(id);
             return true;
         }
 
-        public List<MenuItem> GetAll()
+        public async Task<List<MenuItemDto>> GetAll()
         {
-            return menuItems;
+            var result = await _repository.GetAllAsync();
+            return _mapper.Map<List<MenuItemDto>>(result);
         }
 
-        public MenuItem GetById(int id)
+        public async Task<MenuItemDto> GetById(int id)
         {
-            return menuItems.FirstOrDefault(e => e.Id == id);
+            var result = await _repository.GetByIdAsync(id);
+            return _mapper.Map<MenuItemDto>(result);
         }
 
-        public bool Update(int id, MenuItem menuItem)
+        public async Task<bool> Update(int id, UpdateMenuItemDto dto)
         {
-            var existingMenuItem = menuItems.FirstOrDefault(e => e.Id == id);
+            var existingMenuItem = await _repository.GetByIdAsync(id);
             if (existingMenuItem == null)
             {
                 return false;
             }
-            existingMenuItem.Name = menuItem.Name;
-            existingMenuItem.Description = menuItem.Description;
-            existingMenuItem.Price = menuItem.Price;
-            //existingMenuItem.Category = menuItem.Category;
-            existingMenuItem.MealType = menuItem.MealType;
+
+            _mapper.Map(dto, existingMenuItem);
+            await _repository.UpdateAsync(existingMenuItem);
             return true;
         }
     }

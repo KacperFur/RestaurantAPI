@@ -1,69 +1,63 @@
-﻿using RestaurantAPI.Application.Interfaces;
+﻿using AutoMapper;
+using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Domain.Entities;
+using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Application.Services
 {
     public class OrderService : IOrderService
     {
-        private List<Order> orders = new List<Order>
+        private readonly IOrderRepository _repository;
+        private readonly IMapper _mapper;
+        public OrderService(IOrderRepository repository, IMapper mapper)
         {
-            new Order(1, 1, 1, DateTime.Now, OrderStatus.Pending, 19.99m, new List<OrderItem>
-            {
-                new OrderItem(1, 1, 1, 2, 19.99m),
-                new OrderItem(2, 1, 2, 1, 5.99m)
-            }),
-            new Order(2, 2, 2, DateTime.Now, OrderStatus.Completed, 15.99m, new List<OrderItem>
-            {
-                new OrderItem(3, 2, 3, 1, 7.99m),
-                new OrderItem(4, 2, 4, 1, 8.00m)
-            }),
-            new Order(3, 3, 3, DateTime.Now, OrderStatus.Cancelled, 12.99m, new List<OrderItem>
-            {
-                new OrderItem(5, 3, 5, 1, 12.99m)
-            })
-        };
-
-        public void Create(Order order)
-        {
-            orders.Add(order);
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        public bool Delete(int id)
+        public async Task<int> Create(CreateOrderDto dto)
         {
-            var order = orders.FirstOrDefault(e => e.Id == id);
+           var order = _mapper.Map<Order>(dto);
+           await _repository.AddAsync(order);
+           return order.Id;
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            var order = await _repository.GetByIdAsync(id);
             if (order == null)
             {
                 return false;
             }
 
-            orders.Remove(order);
+            await _repository.DeleteAsync(id);
             return true;
         }
 
-        public List<Order> GetAll()
+        public async Task<List<OrderDto>> GetAll()
         {
-            return orders;
+            var result = await _repository.GetAllAsync();
+            return _mapper.Map<List<OrderDto>>(result);
         }
 
-        public Order GetById(int id)
+        public async Task<OrderDto> GetById(int id)
         {
-            return orders.FirstOrDefault(e => e.Id == id);
+            var result = await _repository.GetByIdAsync(id);
+            return _mapper.Map<OrderDto>(result);
         }
 
-        public bool Update(int id, Order order)
+        public async Task<bool> Update(int id, UpdateOrderDto dto)
         {
-            var existingOrder = orders.FirstOrDefault(e => e.Id == id);
+            var existingOrder = await _repository.GetByIdAsync(id);
             if (existingOrder == null)
             {
                 return false;
             }
-            existingOrder.UserId = order.UserId;
-            //existingOrder.DishId = order.DishId;
-            existingOrder.OrderDate = order.OrderDate;
-            existingOrder.Status = order.Status;
-            existingOrder.TotalAmount = order.TotalAmount;
-            //existingOrder.OrderItems = order.OrderItems;
+
+            _mapper.Map(dto, existingOrder);
+            await _repository.UpdateAsync(existingOrder);
             return true;
         }
     }

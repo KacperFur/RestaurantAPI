@@ -14,38 +14,86 @@ namespace RestaurantAPI.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly IDbConnection _db;
+        private readonly string _connectionString;
         public UserRepository(IConfiguration config)
         {
-           _db = new SqlConnection(config.GetConnectionString("DefaultConnection"));
+            _connectionString = config.GetConnectionString("DefaultConnection");
         }
         public async Task AddAsync(User user)
         {
-            throw new NotImplementedException();
+            user.UserId = Guid.NewGuid();
+            user.CreatedAt = DateTime.UtcNow;
+            var sql = @"
+                INSERT INTO Users 
+                (user_id, first_name, 
+                last_name, username, 
+                password_hash, email, 
+                role_id, created_at)
+                VALUES 
+                (@UserId, @FirstName, 
+                 @LastName, @Username, 
+                 @PasswordHash, @Email, 
+                @RoleId, @CreatedAt);";
+            
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(sql, user);
+            }
         }
 
         public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var sql = "DELETE FROM Users WHERE id = @id";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(sql, new { id });
+            }
         }
 
         public async Task<List<User>> GetAllAsync()
         {
             var sql = "SELECT * FROM Users";
-            var result = await _db.QueryAsync<User>(sql);
-            return result.ToList();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var result = await connection.QueryAsync<User>(sql);
+                return result.ToList();
+            }
         }
 
         public async Task<User> GetByIdAsync(int id)
         {
             var sql = $"SELECT * FROM Users where id = @id";
-            var result = await _db.QueryAsync<User>(sql, new {id});
-            return result.SingleOrDefault();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                var result = await connection.QueryAsync<User>(sql, new { id });
+                return result.SingleOrDefault();
+            }
         }
 
         public async Task UpdateAsync(User user)
         {
-            throw new NotImplementedException();
+            user.UpdatedAt = DateTime.UtcNow;
+            var sql = @"
+            UPDATE Users 
+            SET first_name = @FirstName,
+                last_name = @LastName,
+                username = @Username,
+                password_hash = @PasswordHash,
+                email = @Email,
+                role_id = @RoleId,
+                updated_at = @UpdatedAt
+            WHERE id = @Id";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(sql, user);
+            }
         }
     }
 }

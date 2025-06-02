@@ -1,18 +1,13 @@
-﻿using RestaurantAPI.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RestaurantAPI.Application.Models;
 
 namespace RestaurantAPI.Application.Interfaces
 {
     public interface IOrderService
     {
-        List<Order> GetAll();
-        Order GetById(int id);
-        void Create(Order order);
-        bool Update(int id, Order order);
-        bool Delete(int id);
+        Task<List<OrderDto>> GetAll();
+        Task<OrderDto> GetById(int id);
+        Task<int> Create(CreateOrderDto order);
+        Task<bool> Update(int id, UpdateOrderDto order);
+        Task<bool> Delete(int id);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Application.Models;
 using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
@@ -18,9 +19,9 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<List<Order>> GetAll()
+        public async Task<ActionResult<List<OrderDto>>> GetAll()
         {
-            return Ok(_orderService.GetAll());
+            return Ok(await _orderService.GetAll());
         }
 
         /// <summary>
@@ -29,9 +30,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<Order> GetById(int id)
+        public async Task<ActionResult<OrderDto>> GetById(int id)
         {
-            var order = _orderService.GetById(id);
+            var order = await _orderService.GetById(id);
             if (order == null)
             {
                 return NotFound();
@@ -46,15 +47,15 @@ namespace RestaurantAPI.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<Order> Create(Order order)
+        public async Task<ActionResult<OrderDto>> Create(CreateOrderDto dto)
         {
-            if (order == null)
+            if (dto == null)
             {
                 return BadRequest();
             }
 
-            _orderService.Create(order);
-            return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
+            var orderId = await _orderService.Create(dto);
+            return CreatedAtAction(nameof(GetById), new { id = orderId }, dto);
         }
 
         /// <summary>
@@ -64,20 +65,20 @@ namespace RestaurantAPI.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult<Order> Update(int id, Order order)
+        public async Task<ActionResult<OrderDto>> Update(int id, UpdateOrderDto dto)
         {
-            if (order == null || order.Id != id)
+            if (dto == null)
             {
                 return BadRequest();
             }
 
-            var updated = _orderService.Update(id, order);
-            if (updated)
+            var updated = await _orderService.Update(id, dto);
+            if (!updated)
             {
                 return NotFound();
             }
 
-            return Ok(order);
+            return NoContent();
         }
 
         /// <summary>
@@ -86,9 +87,9 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task <ActionResult> Delete(int id)
         {
-            var deleted = _orderService.Delete(id);
+            var deleted = await _orderService.Delete(id);
             if (!deleted)
             {
                 return NotFound();

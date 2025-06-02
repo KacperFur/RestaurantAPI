@@ -1,4 +1,5 @@
-﻿using RestaurantAPI.Entities;
+﻿using RestaurantAPI.Application.Models;
+using RestaurantAPI.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace RestaurantAPI.Application.Interfaces
 {
     public interface IPaymentService
     {
-        List<Payment> GetAll();
-        Payment GetById(int id);
-        void Create(Payment payment);
-        bool Update(int id, Payment payment);
-        bool Delete(int id);
+        Task<List<PaymentDto>> GetAll();
+        Task<PaymentDto> GetById(int id);
+        Task<int> Create(CreatePaymentDto payment);
+        Task<bool> Update(int id, UpdatePaymentDto payment);
+        Task<bool> Delete(int id);
     }
 }

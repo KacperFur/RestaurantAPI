@@ -1,4 +1,5 @@
-﻿using RestaurantAPI.Entities;
+﻿using RestaurantAPI.Application.Models;
+using RestaurantAPI.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace RestaurantAPI.Application.Interfaces
 {
     public interface IMenuItemService
     {
-        List<MenuItem> GetAll();
-        MenuItem GetById(int id);
-        void Create(MenuItem menuItem);
-        bool Update(int id, MenuItem menuItem);
-        bool Delete(int id);
+        Task<List<MenuItemDto>> GetAll();
+        Task<MenuItemDto> GetById(int id);
+        Task<int> Create(CreateMenuItemDto menuItem);
+        Task<bool> Update(int id, UpdateMenuItemDto menuItem);
+        Task<bool> Delete(int id);
     }
 }

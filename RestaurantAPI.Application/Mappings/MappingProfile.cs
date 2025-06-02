@@ -24,9 +24,12 @@ namespace RestaurantAPI.Application.Mappings
                 // MenuItem
                 CreateMap<MenuItem, MenuItemDto>();
                 CreateMap<CreateMenuItemDto, MenuItem>();
+                CreateMap<UpdateMenuItemDto, MenuItem>()
+                    .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                    .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
 
-                // Order
-                CreateMap<Order, OrderDto>();
+            // Order
+            CreateMap<Order, OrderDto>();
                 CreateMap<CreateOrderDto, Order>();
                 CreateMap<UpdateOrderDto, Order>()
                     .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())

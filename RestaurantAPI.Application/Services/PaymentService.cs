@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
-using RestaurantAPI.Domain.Entities;
 using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
 

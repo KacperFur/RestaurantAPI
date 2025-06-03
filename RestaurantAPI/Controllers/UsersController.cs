@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
-using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
 {

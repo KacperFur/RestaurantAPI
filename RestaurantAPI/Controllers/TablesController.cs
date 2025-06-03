@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
-using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
 {
@@ -20,7 +19,7 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<List<Table>>> GetAll()
+        public async Task<ActionResult<List<TableDto>>> GetAll()
         {
             return Ok(await _tableService.GetAll());
         }
@@ -31,7 +30,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Table>> GetById(int id)
+        public async Task<ActionResult<TableDto>> GetById(int id)
         {
             var table = await _tableService.GetById(id);
             if (table == null)
@@ -48,7 +47,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="table"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<Table>> Create(CreateTableDto table)
+        public async Task<ActionResult<TableDto>> Create(CreateTableDto table)
         {
             if (table == null)
             {

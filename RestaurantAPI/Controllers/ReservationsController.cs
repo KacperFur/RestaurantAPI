@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
-using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Controllers
 {
@@ -46,7 +45,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="reservation"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<Reservation>> Create(CreateReservationDto dto)
+        public async Task<ActionResult<ReservationDto>> Create(CreateReservationDto dto)
         {
             if (dto == null)
             {

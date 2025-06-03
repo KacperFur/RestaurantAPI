@@ -1,12 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
-using System;
-using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dapper;
 
 namespace RestaurantAPI.Infrastructure.Repositories

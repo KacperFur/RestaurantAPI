@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
 using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
-using System.Threading.Tasks;
 
 
 namespace RestaurantAPI.Application.Services

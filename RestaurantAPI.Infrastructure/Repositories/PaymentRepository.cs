@@ -1,18 +1,18 @@
 ﻿using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Domain.Entities;
 using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
+using RestaurantAPI.Infrastructure.SqlQueries;
 
 namespace RestaurantAPI.Infrastructure.Repositories
 {
     public class PaymentRepository : IPaymentRepository
     {
-        private readonly string _connectionString;
-        public PaymentRepository(IConfiguration config)
+        private readonly IDbConnectionFactory _connectionFactory;
+        public PaymentRepository(IDbConnectionFactory connectionFactory)
         {
-            _connectionString = config.GetConnectionString("DefaultConnection");
+            _connectionFactory = connectionFactory;
         }
         public async Task AddAsync(Payment payment)
         {
@@ -23,60 +23,49 @@ namespace RestaurantAPI.Infrastructure.Repositories
             payment.PaymentId = Guid.NewGuid();
             payment.Status = PaymentStatus.Paid.ToString();
             payment.PaidAt = DateTime.UtcNow;
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(sql, payment);
+                connection.Open();
+                await connection.ExecuteAsync(PaymentSql.Add, payment);
             }
         }
 
         public async Task DeleteAsync(int id)
         {
             var sql = "DELETE FROM payments WHERE id = @id";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(sql, new { id });
+                connection.Open();
+                await connection.ExecuteAsync(PaymentSql.Delete, new { id });
             }
         }
 
         public async Task<List<Payment>> GetAllAsync()
         {
             var sql = "SELECT * FROM payments";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                var result = await connection.QueryAsync<Payment>(sql);
+                connection.Open();
+                var result = await connection.QueryAsync<Payment>(PaymentSql.GetAll);
                 return result.ToList();
             }
         }
 
         public async Task<Payment> GetByIdAsync(int id)
         {
-            var sql = "SELECT * FROM payments WHERE id = @id";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                return await connection.QueryFirstOrDefaultAsync<Payment>(sql, new { id });
+                connection.Open();
+                return await connection.QuerySingleOrDefaultAsync<Payment>(PaymentSql.GetById, new {Id = id });
             }
         }
 
         public async Task UpdateAsync(Payment payment)
         {
-            var sql = @"
-            UPDATE payments
-            SET order_id = @OrderId,
-                amount = @Amount,
-                method = @Method,
-                status = @Status,
-                paid_at = @PaidAt
-            WHERE id = @Id";
-
-
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(sql, payment);
+                connection.Open();
+                await connection.ExecuteAsync(PaymentSql.Update, payment);
             }
         }
     }

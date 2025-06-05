@@ -43,7 +43,7 @@ namespace RestaurantAPI.Application.Services
 
         public async Task<PaymentDto> GetById(int id)
         {
-            var result = _repository.GetByIdAsync(id);
+            var result = await _repository.GetByIdAsync(id);
             return _mapper.Map<PaymentDto>(result);
         }
 

@@ -3,88 +3,68 @@ using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
 using Microsoft.Data.SqlClient;
 using Dapper;
+using RestaurantAPI.Application.Interfaces;
+using RestaurantAPI.Infrastructure.SqlQueries;
 
 namespace RestaurantAPI.Infrastructure.Repositories
 {
     public class MenuItemRepository : IMenuItemRepository
     {
-        private readonly string _connectionString;
-        public MenuItemRepository(IConfiguration config)
+        private readonly IDbConnectionFactory _connectionFactory;
+        public MenuItemRepository(IDbConnectionFactory connectionFactory)
         {
-            _connectionString = config.GetConnectionString("DefaultConnection");
+            _connectionFactory = connectionFactory;
         }
+
         public async Task AddAsync(MenuItem menuItem)
         {
             menuItem.MenuItemId = Guid.NewGuid();
             menuItem.CreatedAt = DateTime.UtcNow;
-            var sql = @"
-            INSERT INTO menu_items 
-            (menu_item_id, name,
-            description, price, 
-            category_id, meal_type,
-            created_at)
-            VALUES (@MenuItemId, @Name,
-            @Description, @Price,
-            @CategoryId, @MealType,
-            @CreatedAt);";
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(sql, menuItem);
+                connection.Open();
+                await connection.ExecuteAsync(MenuItemSql.Add, menuItem);
             }
         }
 
         public async Task DeleteAsync(int id)
         {
-            var sql = "DELETE FROM menu_items WHERE id = @Id";
-
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(sql, new { id });
+                connection.Open();
+                await connection.ExecuteAsync(MenuItemSql.Delete, new { id });
             }
         }
 
         public async Task<List<MenuItem>> GetAllAsync()
         {
-            var sql = "SELECT * FROM menu_items";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                var result = await connection.QueryAsync<MenuItem>(sql);
+                connection.Open();
+                var result = await connection.QueryAsync<MenuItem>(MenuItemSql.GetAll);
                 return result.ToList();
             }
         }
 
         public async Task<MenuItem> GetByIdAsync(int id)
         {
-            var sql = $"SELECT * FROM menu_items where id = @id";
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                var result = await connection.QueryAsync<MenuItem>(sql, new { id });
-                return result.SingleOrDefault();
+                connection.Open();
+                var result = await connection.QuerySingleOrDefaultAsync<MenuItem>(MenuItemSql.GetById, new { id });
+                return result;
             }
         }
 
         public async Task UpdateAsync(MenuItem menuItem)
         {
             menuItem.UpdatedAt = DateTime.UtcNow;
-            var sql = @"
-            UPDATE menu_items 
-            SET name = @Name,
-                description = @Description,
-                price = @Price,
-                meal_type = @MealType,
-                updated_at = @UpdatedAt  
-            WHERE id = @Id";
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(sql, menuItem);
-
+                connection.Open();
+                await connection.ExecuteAsync(MenuItemSql.Update, menuItem);
             }
         }
     }

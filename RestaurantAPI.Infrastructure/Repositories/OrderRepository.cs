@@ -1,44 +1,35 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Domain.Entities;
 using RestaurantAPI.Domain.Interfaces;
 using RestaurantAPI.Entities;
+using RestaurantAPI.Infrastructure.SqlQueries;
 
 namespace RestaurantAPI.Infrastructure.Repositories
 {
     public class OrderRepository : IOrderRepository
     {
-        private readonly string _connectionString;
-        public OrderRepository(IConfiguration config)
+        private readonly IDbConnectionFactory _connectionFactory;
+        public OrderRepository(IDbConnectionFactory connectionFactory)
         {
-            _connectionString = config.GetConnectionString("DefaultConnection");
+            _connectionFactory = connectionFactory;
         }
         public async Task AddAsync(Order order)
         {
-            var orderSql = @"
-INSERT INTO orders 
-(order_id, user_id, order_date, total_amount, status, created_at) 
-OUTPUT INSERTED.id
-VALUES (@OrderId, @UserId, @OrderDate, @TotalAmount, @Status, @CreatedAt);";
-
-            var orderItemSql = @"
-INSERT INTO order_items 
-(order_item_id, order_id, menu_item_id, quantity, price, created_at) 
-VALUES (@OrderItemId, @OrderId, @MenuItemId, @Quantity, @Price, @CreatedAt);";
-
             order.OrderId = Guid.NewGuid();
             order.CreatedAt = DateTime.UtcNow;
             order.OrderDate = DateTime.UtcNow;
             order.Status = OrderStatus.Pending.ToString();
 
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            using var connection =_connectionFactory.CreateConnection();
+            connection.Open();
             using var transaction = connection.BeginTransaction();
 
             try
             {
-                order.Id = await connection.ExecuteScalarAsync<int>(orderSql, order, transaction);
+                order.Id = await connection.ExecuteScalarAsync<int>(OrderSql.OrderAddSql, order, transaction);
 
                 foreach (var item in order.OrderItems)
                 {
@@ -46,14 +37,14 @@ VALUES (@OrderItemId, @OrderId, @MenuItemId, @Quantity, @Price, @CreatedAt);";
                     item.OrderId = order.Id; 
                     item.CreatedAt = DateTime.UtcNow;
 
-                    await connection.ExecuteAsync(orderItemSql, item, transaction);
+                    await connection.ExecuteAsync(OrderSql.OrderItemAddSql, item, transaction);
                 }
 
-                await transaction.CommitAsync();
+                transaction.Commit();
             }
             catch
             {
-                await transaction.RollbackAsync();
+                transaction.Rollback();
                 throw;
             }
         }
@@ -61,23 +52,20 @@ VALUES (@OrderItemId, @OrderId, @MenuItemId, @Quantity, @Price, @CreatedAt);";
 
         public async Task DeleteAsync(int id)
         {
-            var deleteOrderItemsSql = "DELETE FROM order_items WHERE order_id = @id";
-            var deleteOrderSql = "DELETE FROM orders WHERE id = @id";
-
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        await connection.ExecuteAsync(deleteOrderItemsSql, new { id }, transaction);
-                        await connection.ExecuteAsync(deleteOrderSql, new { id }, transaction);
-                        await transaction.CommitAsync();
+                        await connection.ExecuteAsync(OrderSql.DeleteOrderItems, new { id }, transaction);
+                        await connection.ExecuteAsync(OrderSql.DeleteOrder, new { id }, transaction);
+                        transaction.Commit();
                     }
                     catch
                     {
-                        await transaction.RollbackAsync();
+                        transaction.Rollback();
                         throw;
                     }
                 }
@@ -86,21 +74,13 @@ VALUES (@OrderItemId, @OrderId, @MenuItemId, @Quantity, @Price, @CreatedAt);";
 
         public async Task<List<Order>> GetAllAsync()
         {
-            var sql = @"SELECT 
-                    o.id, o.order_id, o.user_id, o.order_date, o.status, o.total_amount,
-                    oi.id, oi.order_item_id, oi.menu_item_id, oi.quantity, oi.price,
-                    mi.id, mi.menu_item_id, mi.name, mi.description, mi.price, mi.category_id, mi.meal_type
-                FROM orders o
-                LEFT JOIN order_items oi ON o.id = oi.order_id
-                LEFT JOIN menu_items mi ON oi.menu_item_id = mi.id";
-
             var orderDict = new Dictionary<int, Order>();
 
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            using var connection = _connectionFactory.CreateConnection();
+            connection.Open();
 
             var result = await connection.QueryAsync<Order, OrderItem, MenuItem, Order>(
-                sql,
+                OrderSql.GetAll,
                 (order, orderItem, menuItem) =>
                 {
                     if (!orderDict.TryGetValue(order.Id, out var currentOrder))
@@ -110,7 +90,6 @@ VALUES (@OrderItemId, @OrderId, @MenuItemId, @Quantity, @Price, @CreatedAt);";
                         orderDict.Add(order.Id, currentOrder);
                     }
 
-                    // orderItem.Id może być 0 tylko jeśli nie istnieje (LEFT JOIN)
                     if (orderItem != null && orderItem.Id != 0)
                     {
                         orderItem.MenuItem = (menuItem != null && menuItem.Id != 0) ? menuItem : null;
@@ -131,29 +110,47 @@ VALUES (@OrderItemId, @OrderId, @MenuItemId, @Quantity, @Price, @CreatedAt);";
 
         public async Task<Order> GetByIdAsync(int id)
         {
-            var sql = @"SELECT * FROM orders WHERE id = @id";
-            using (var connection = new SqlConnection(_connectionString))
+            var orderDictionary = new Dictionary<int, Order>();
+
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                var result = await connection.QueryAsync<Order>(sql, new { id });
-                return result.SingleOrDefault();
+                connection.Open();
+
+                var result = await connection.QueryAsync<Order, OrderItem, MenuItem, Order>(
+                    OrderSql.GetById,
+                    (order, orderItem, menuItem) =>
+                    {
+                        if (!orderDictionary.TryGetValue(order.Id, out var currentOrder))
+                        {
+                            currentOrder = order;
+                            currentOrder.OrderItems = new List<OrderItem>();
+                            orderDictionary.Add(order.Id, currentOrder);
+                        }
+
+                        if (orderItem != null)
+                        {
+                            orderItem.MenuItem = menuItem;
+                            currentOrder.OrderItems.Add(orderItem);
+                        }
+
+                        return currentOrder;
+                    },
+                    new { Id = id },
+                    splitOn: "order_item_id,menu_item_id"
+                );
+
+                return orderDictionary.Values.FirstOrDefault();
             }
         }
 
+
         public async Task UpdateAsync(Order order)
         {
-            var sql =
-                @"UPDATE orders
-                 SET user_id = @UserId,
-                order_date = @OrderDate,
-                status = @Status,
-                total_amount = @TotalAmount
-                WHERE id = @Id";
             order.UpdatedAt = DateTime.UtcNow;
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(sql, order);
+                connection.Open();
+                await connection.ExecuteAsync(OrderSql.Update, order);
             }
         }
     }

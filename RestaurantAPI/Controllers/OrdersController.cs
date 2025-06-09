@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
 
@@ -18,6 +19,7 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Policy = "AnyStaff")]
         public async Task<ActionResult<List<OrderDto>>> GetAll()
         {
             return Ok(await _orderService.GetAll());
@@ -29,6 +31,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize(Policy = "AnyStaff")]
         public async Task<ActionResult<OrderDto>> GetById(int id)
         {
             var order = await _orderService.GetById(id);
@@ -46,6 +49,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<ActionResult<OrderDto>> Create(CreateOrderDto dto)
         {
             if (dto == null)
@@ -64,6 +68,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<ActionResult<OrderDto>> Update(int id, UpdateOrderDto dto)
         {
             if (dto == null)
@@ -86,6 +91,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOrManager")]
         public async Task <ActionResult> Delete(int id)
         {
             var deleted = await _orderService.Delete(id);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
 
@@ -18,7 +19,10 @@ namespace RestaurantAPI.Controllers
         /// Get all tables
         /// </summary>
         /// <returns></returns>
+        /// 
+        
         [HttpGet]
+        [Authorize(Policy = "AnyStaff")]
         public async Task<ActionResult<List<TableDto>>> GetAll()
         {
             return Ok(await _tableService.GetAll());
@@ -30,6 +34,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize(Policy = "AnyStaff")]
         public async Task<ActionResult<TableDto>> GetById(int id)
         {
             var table = await _tableService.GetById(id);
@@ -47,6 +52,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="table"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<TableDto>> Create(CreateTableDto table)
         {
             if (table == null)
@@ -65,6 +71,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="table"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<TableDto>> Update(int id, UpdateTableDto table)
         {
             if (table == null)
@@ -83,6 +90,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(int id)
         {
             var deleted = await _tableService.Delete(id);

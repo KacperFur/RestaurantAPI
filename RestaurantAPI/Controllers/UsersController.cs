@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
@@ -18,6 +19,7 @@ namespace RestaurantAPI.Controllers
         /// Get all users
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "AdminOrManager")]
         [HttpGet]
         public async Task<ActionResult<List<UserDto>>> GetAll()
         {
@@ -30,6 +32,7 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Policy = "AdminOrManager")]
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetById(int id)
         {
@@ -46,15 +49,16 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
+        [Authorize(Roles = "AdminOnly")]
         [HttpPost]
-        public ActionResult<UserDto> Create(CreateUserDto dto)
+        public ActionResult<int> Create(CreateUserDto dto)
         {
             if (dto == null)
             {
                 return BadRequest();
             }
             var newId = _userService.Create(dto);
-            return CreatedAtAction(nameof(GetById),new { Id = newId }, dto);
+            return CreatedAtAction(nameof(GetById),new { Id = newId }, newId);
         }
 
         /// <summary>
@@ -63,6 +67,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <param name="user"></param>
         /// <returns></returns>
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> Update(int id, UpdateUserDto dto)
         {
@@ -81,6 +86,7 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

@@ -8,6 +8,7 @@ using RestaurantAPI.Infrastructure.SqlQueries;
 
 namespace RestaurantAPI.Infrastructure.Repositories
 {
+    //Refactored to move sql queries to a separate class for better organization and maintainability.
     public class MenuItemRepository : IMenuItemRepository
     {
         private readonly IDbConnectionFactory _connectionFactory;

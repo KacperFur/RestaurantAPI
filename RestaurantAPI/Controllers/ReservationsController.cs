@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantAPI.Application.Interfaces;
 using RestaurantAPI.Application.Models;
 
@@ -18,6 +19,7 @@ namespace RestaurantAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Policy = "AnyStaff")]
         public async Task<ActionResult<List<ReservationDto>>> GetAll()
         {
             return Ok(await _reservationService.GetAll());
@@ -29,6 +31,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize(Policy = "AnyStaff")]
         public async Task<ActionResult<ReservationDto>> GetById(int id)
         {
             var reservation = await _reservationService.GetById(id);
@@ -45,6 +48,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="reservation"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "AnyStaff")]
         public async Task<ActionResult<ReservationDto>> Create(CreateReservationDto dto)
         {
             if (dto == null)
@@ -63,6 +67,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="reservation"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
+        [Authorize(Policy = "AnyStaff")]
         public async Task <ActionResult<ReservationDto>> Update(int id, UpdateReservationDto dto)
         {
             if (dto == null)
@@ -84,6 +89,7 @@ namespace RestaurantAPI.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AnyStaff")]
         public async Task<ActionResult> Delete(int id)
         {
             var deleted = await _reservationService.Delete(id);

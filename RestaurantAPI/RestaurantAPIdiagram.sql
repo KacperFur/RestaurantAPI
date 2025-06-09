@@ -176,3 +176,36 @@ GO
 
 ALTER TABLE [users] ADD FOREIGN KEY ([role_id]) REFERENCES [roles] ([id])
 GO
+
+INSERT INTO roles (role_id, name, description)
+VALUES
+(NEWID(), 'Employee', 'Regular employee'),
+(NEWID(), 'Manager', 'Restaurant Manager'),
+(NEWID(), 'Admin', 'System Administrator');
+
+INSERT INTO categories (category_id, name)
+VALUES 
+(NEWID(), 'Oriental'),
+(NEWID(), 'Italian'),
+(NEWID(), 'French');
+
+INSERT INTO users (
+    user_id,
+    first_name,
+    last_name,
+    username,
+    password_hash,
+    email,
+    role_id,
+    created_at
+)
+VALUES (
+    NEWID(),
+    'Admin',
+    'User',
+    'admin',
+    'AQAAAAIAAYagAAAAELTOP5aCPzzILQ0wo55bEUG/+3IN5NudlSRk9MQaL5P0Zpa4tHEiOVUsTYVzpjp5qg==', --"Admin1234" 
+    'admin@example.com',
+    (SELECT id FROM roles WHERE name = 'admin'),
+    GETDATE()
+);
